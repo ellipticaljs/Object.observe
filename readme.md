@@ -66,3 +66,8 @@ Latest Updates
     * Memory leak fix by Moshemal
     * Array length now reports as an update when it changes
     * Added enumerable flag to defineProperty
+
+# Forked Modifications
+
+    * Converted to a UMD Module
+    
