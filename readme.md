@@ -67,7 +67,10 @@ Latest Updates
     * Array length now reports as an update when it changes
     * Added enumerable flag to defineProperty
 
-# Forked Modifications
+Forked Modifications
+--------------------
 
     * Converted to a UMD Module
+    * Added setImmediate Shim Dependency
+    * Gulp Build Tasks
     
