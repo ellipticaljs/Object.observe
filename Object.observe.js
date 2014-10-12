@@ -152,7 +152,7 @@
 
                     validateArguments(O, callback, accept);
                     if (!accept) {
-                        accept = ["add", "update", "delete", "slice"];
+                        accept = ["add", "update", "delete", "splice"];
                     }
 
                     Object.getNotifier(O).addListener(callback, accept);
