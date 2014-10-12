@@ -12,10 +12,11 @@ Trying to stay as close to the spec as possible, this is a work in progress, fee
 
 http://wiki.ecmascript.org/doku.php?id=harmony:observe
 
-TODO
-----
+Forked Status
+-------------
+While there is no direct support for Array.observe, arrays passed to the Object.observe shim will produce change records in the callback that match
+the current stable Chrome 38 build for type "splice" in the accept list(which is the default).
 
-The spec has changed a lot since I origionally wrote this, need to go back and add in a lot of things like custom update types and other fun.  For now though it seems to suffice.
 
 Limits so far
 --------------
@@ -30,6 +31,10 @@ delete myObject.foo;
 ```
 
   The observer function would never see the addition of foo since it was deleted so quickly.
+  
+  Additional limit: Overriding the accept list w/o "splice" will produce change records that will not match the current Chrome stable(38) if an array is passed to Object.observe.
+  
+  
 
 Testing
 -------
