@@ -175,24 +175,24 @@
 }(new Function("return this")()));
 
 /*
-  Tested against Chromium build with Object.observe and acts EXACTLY the same,
-  though Chromium build is MUCH faster
+ Tested against Chromium build with Object.observe and acts EXACTLY the same,
+ though Chromium build is MUCH faster
 
-  Trying to stay as close to the spec as possible,
-  this is a work in progress, feel free to comment/update
+ Trying to stay as close to the spec as possible,
+ this is a work in progress, feel free to comment/update
 
-  Specification:
-    http://wiki.ecmascript.org/doku.php?id=harmony:observe
+ Specification:
+ http://wiki.ecmascript.org/doku.php?id=harmony:observe
 
-  Built using parts of:
-    https://github.com/tvcutsem/harmony-reflect/blob/master/examples/observer.js
+ Built using parts of:
+ https://github.com/tvcutsem/harmony-reflect/blob/master/examples/observer.js
 
-  Limits so far;
-    Built using polling... Will update again with polling/getter&setters to make things better at some point
+ Limits so far;
+ Built using polling... Will update again with polling/getter&setters to make things better at some point
 
-TODO:
-  Add support for Object.prototype.watch -> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/watch
-*/
+ TODO:
+ Add support for Object.prototype.watch -> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/watch
+ */
 
 
 //umd pattern
@@ -287,6 +287,16 @@ TODO:
                 return ('value' in desc || 'writable' in desc);
             };
 
+            var inArray=function(arr,val){
+                var bool=false;
+                arr.forEach(function(v){
+                    if(v===val){
+                        bool=true;
+                    }
+                });
+                return bool;
+            };
+
             var validateArguments = function validateArguments(O, callback, accept){
                 if(typeof(O)!=='object'){
                     // Throw Error
@@ -309,11 +319,18 @@ TODO:
 
             var Observer = (function Observer(){
                 var wraped = [];
+
                 var Observer = function Observer(O, callback, accept){
+
+                    if (Array.isArray(O)) {
+                        Observer._oldValue= O.concat([]);
+                    }
+
                     validateArguments(O, callback, accept);
                     if (!accept) {
-                        accept = ["add", "update", "delete", "reconfigure", "setPrototype", "preventExtensions"];
+                        accept = ["add", "update", "delete", "slice"];
                     }
+
                     Object.getNotifier(O).addListener(callback, accept);
                     if(wraped.indexOf(O)===-1){
                         wraped.push(O);
@@ -351,6 +368,7 @@ TODO:
             var Notifier = function Notifier(watching){
                 var _listeners = [], _acceptLists = [], _updates = [], _updater = false, properties = [], values = [];
                 var self = this;
+
                 Object.defineProperty(self, '_watching', {
                     enumerable: true,
                     get: (function(watched){
@@ -393,8 +411,8 @@ TODO:
                     var prop, queueUpdates = !dontQueueUpdates, propType, value, idx, aLength;
 
                     if(object instanceof Array){
-                        aLength = self._oldLength;//object.length;
-                        //aLength = object.length;
+                        aLength = self._oldLength;
+
                     }
 
                     for(i=0; i<l; i++){
@@ -482,6 +500,7 @@ TODO:
                     //keepRunning = true, removed as it seems the actual implementation doesn't do this
                     // In response to BUG #5
                         retval;
+
                     for(i=0; i<l; i++){
                         if(_listeners[i]){
                             var currentUpdates;
@@ -497,6 +516,13 @@ TODO:
                                 currentUpdates = _updates;
                             }
                             if (currentUpdates.length) {
+                                //support 'splice' for arrays
+
+                                if(inArray(_acceptLists[i],'splice')){
+                                    var spliceUpdates=self._arrayObserverSplice(currentUpdates);
+                                    currentUpdates=(spliceUpdates) ? spliceUpdates : currentUpdates;
+                                }
+
                                 if(_listeners[i]===console.log){
                                     console.log(currentUpdates);
                                 }else{
@@ -515,6 +541,83 @@ TODO:
                     self.queueUpdates([changeRecord]);
                 };
                 self._checkPropertyListing(true);
+                self._arrayObserverSplice=function(updates){
+                    var currentValue=updates[0].object;
+                    if (!Array.isArray(currentValue)) {
+                        return false;
+                    }
+                    var oldValue=Observer._oldValue;
+                    if(oldValue===undefined){
+                        return false;
+                    }
+                    var oldLength=oldValue.length;
+                    var currentLength=currentValue.length;
+                    if(currentLength===oldLength){
+                        return false;
+                    }
+                    var cr=self._spliceChangeRecord();
+                    cr.object=currentValue;
+                    var oldLastIndex=oldLength -1;
+                    var currentLastIndex=currentLength-1;
+                    if(currentLength > oldLength){
+                        //add
+                        cr.addedCount=currentLength-oldLength;
+                        //get the index
+                        //test for push
+                        if(!(oldValue[oldLastIndex]===currentValue[currentLastIndex])){
+                            cr.index=oldLastIndex +1;
+                        }else if(!(oldValue[0]===currentValue[0])){//unshift
+                            cr.index=0
+                        }else{
+                            //iterate for arbitrary splice
+                            for(var i=0;i<oldLength;i++){
+                                if(!(oldValue[i]===currentValue[i])){
+                                    cr.index=i;
+                                    break;
+                                }
+                            }
+                        }
+                    }else{
+                        //delete
+                        var removedCount=oldLength-currentLength;
+                        //test the end
+                        if(!(oldValue[oldLastIndex]===currentValue[currentLastIndex])){
+                            cr.index=currentLastIndex + 1;
+                        }else if(!(oldValue[0]===currentValue[0])){//shift
+                            cr.index=0;
+                        }else{
+                            //iterate for arbitrary splice
+                            for(var i=0;i<oldLength;i++){
+                                if(!(oldValue[i]===currentValue[i])){
+                                    cr.index=i;
+                                    break;
+                                }
+                            }
+                        }
+                        cr.removed=self._removedArray(oldValue,cr.index,removedCount);
+                    }
+
+                    Observer._oldValue=currentValue.concat([]);//reset oldValue to the current value
+                    return [cr];
+
+                };
+                self._spliceChangeRecord=function(){
+                    return{
+                        addedCount:0,
+                        index:undefined,
+                        object:[],
+                        removed:[],
+                        type:'splice'
+                    }
+                };
+                self._removedArray=function(arr,index,count){
+                    var rm=[];
+                    var length=index+count;
+                    for(var i=index;i<length;i++){
+                        rm.push(arr[i])
+                    }
+                    return rm;
+                }
             };
 
             var _notifiers=[], _indexes=[];
@@ -552,7 +655,5 @@ TODO:
 
 
 }));
-
-
 
 
