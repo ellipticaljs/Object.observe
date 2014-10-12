@@ -14,7 +14,7 @@ http://wiki.ecmascript.org/doku.php?id=harmony:observe
 
 Forked Status
 -------------
-While there is no direct support for Array.observe, arrays passed to the Object.observe shim will produce change records in the callback that match
+While there is no direct support for Array.observe, arrays passed to the Object.observe shim will now produce change records in the callback that match
 the current stable Chrome 38 build for type "splice" in the accept list(which is the default).
 
 
