@@ -76,7 +76,6 @@ Forked Modifications
 --------------------
 
     * Converted to a UMD Module
-    * Added setImmediate Shim Dependency
     * Added Object.observe "splice" support for arrays
     * Gulp Build Tasks
     

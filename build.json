@@ -1,4 +1,4 @@
 [
-    "node_modules/setimmediate/setImmediate.js",
+
     "./Object.observe.js"
 ]
