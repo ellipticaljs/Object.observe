@@ -1,5 +1,21 @@
 [![Build Status](https://travis-ci.org/jdarling/Object.observe.svg?branch=master)](https://travis-ci.org/jdarling/Object.observe)
 
+Forked Status
+=============
+While there is no direct support for Array.observe, arrays passed to the Object.observe shim will now produce change records in the callback that match
+the current stable Chrome 46 build for type "splice" in the accept list(which is the default).
+
+
+Forked Modifications
+====================
+
+    * Converted to a UMD Module
+    * Added Object.observe "splice" support for arrays
+    * Removed SetImmediate
+    * Gulp Build Tasks
+    
+    
+
 Object.observe Polyfill/shim
 ============================
 Thanks to my new job I have a lot more time to devote to things like this library.  It has gone a REALLY long time without updates and there is a lot that can be done to make it more functional.  I hope to be spending more time on it soon, but for now I've fixed all the bugs that I know of and have been reported.  Thanks to everyone for their reports, and keep them coming if you find one.
@@ -12,10 +28,7 @@ Trying to stay as close to the spec as possible, this is a work in progress, fee
 
 http://wiki.ecmascript.org/doku.php?id=harmony:observe
 
-Forked Status
--------------
-While there is no direct support for Array.observe, arrays passed to the Object.observe shim will now produce change records in the callback that match
-the current stable Chrome 38 build for type "splice" in the accept list(which is the default).
+
 
 
 Limits so far
@@ -72,10 +85,5 @@ Latest Updates
     * Array length now reports as an update when it changes
     * Added enumerable flag to defineProperty
 
-Forked Modifications
---------------------
 
-    * Converted to a UMD Module
-    * Added Object.observe "splice" support for arrays
-    * Gulp Build Tasks
     

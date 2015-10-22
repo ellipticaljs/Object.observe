@@ -1,25 +1,3 @@
-/*
- Tested against Chromium build with Object.observe and acts EXACTLY the same,
- though Chromium build is MUCH faster
-
- Trying to stay as close to the spec as possible,
- this is a work in progress, feel free to comment/update
-
- Specification:
- http://wiki.ecmascript.org/doku.php?id=harmony:observe
-
- Built using parts of:
- https://github.com/tvcutsem/harmony-reflect/blob/master/examples/observer.js
-
- Limits so far;
- Built using polling... Will update again with polling/getter&setters to make things better at some point
-
- TODO:
- Add support for Object.prototype.watch -> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/watch
- */
-
-
-//umd pattern
 
 (function (root, factory) {
     if (typeof module !== 'undefined' && module.exports) {
@@ -37,6 +15,7 @@
     if(!Object.observe){
         (function(extend, global){
             "use strict";
+
             var isCallable = (function(toString){
                 var s = toString.call(toString),
                     u = typeof u;
@@ -53,42 +32,23 @@
             //Returns true if it is a DOM node
             var isNode = function isNode(o){
                 return (
-                        typeof Node === "object" ? o instanceof Node :
+                    typeof Node === "object" ? o instanceof Node :
                     o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName==="string"
-                    );
-            }
+                );
+            };
             //Returns true if it is a DOM element
             var isElement = function isElement(o){
                 return (
-                        typeof HTMLElement === "object" ? o instanceof HTMLElement : //DOM2
+                    typeof HTMLElement === "object" ? o instanceof HTMLElement : //DOM2
                     o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName==="string"
-                    );
-            }
-            var _isImmediateSupported = (function(){
-                return !!global.setImmediate;
-            })();
-            var _doCheckCallback = (function(){
-                if(_isImmediateSupported){
-                    return function _doCheckCallback(f){
-                        return setImmediate(f);
-                    };
-                }else{
-                    return function _doCheckCallback(f){
-                        return setTimeout(f, 10);
-                    };
-                }
-            })();
-            var _clearCheckCallback = (function(){
-                if(_isImmediateSupported){
-                    return function _clearCheckCallback(id){
-                        clearImmediate(id);
-                    };
-                }else{
-                    return function _clearCheckCallback(id){
-                        clearTimeout(id);
-                    };
-                }
-            })();
+                );
+            };
+            var _doCheckCallback=function(f){
+                setTimeout(f, 10);
+            };
+            var _clearCheckCallback=function(id){
+                clearTimeout(id);
+            };
             var isNumeric=function isNumeric(n){
                 return !isNaN(parseFloat(n)) && isFinite(n);
             };
@@ -152,7 +112,7 @@
 
                     validateArguments(O, callback, accept);
                     if (!accept) {
-                        accept = ["add", "update", "delete", "splice"];
+                        accept = ["add", "update", "delete", "slice"];
                     }
 
                     Object.getNotifier(O).addListener(callback, accept);
@@ -174,7 +134,7 @@
                         for(i=wrapped.lastScanned; (i<l)&&(!takingTooLong); i++){
                             if(_indexes.indexOf(wrapped[i]) > -1){
                                 Object.getNotifier(wrapped[i])._checkPropertyListing();
-                                takingTooLong=((new Date())-startTime)>100; // make sure we don't take more than 100 milliseconds to scan all objects
+                                takingTooLong=((new Date())-startTime)>500; // make sure we don't take more than 100 milliseconds to scan all objects
                             }else{
                                 wrapped.splice(i, 1);
                                 i--;
@@ -229,14 +189,13 @@
                     })(properties.length, prop);
                     return true;
                 };
-                self._checkPropertyListing = function _checkPropertyListing(dontQueueUpdates){
+                self._checkPropertyListing = function _checkPropertyListing(dontQueueUpdates) {
                     var object = self._watching, keys = Object.keys(object), i=0, l=keys.length;
                     var newKeys = [], oldKeys = properties.slice(0), updates = [];
                     var prop, queueUpdates = !dontQueueUpdates, propType, value, idx, aLength;
 
                     if(object instanceof Array){
                         aLength = self._oldLength;
-
                     }
 
                     for(i=0; i<l; i++){
@@ -274,7 +233,7 @@
                             self.queueUpdate(object, oldKeys[i], 'delete', values[idx]);
                             properties.splice(idx,1);
                             values.splice(idx,1);
-                        };
+                        }
                     }
                 };
                 self.addListener = function Notifier_addListener(callback, accept){
@@ -475,9 +434,6 @@
             };
         })(Object, this);
     }
-
-
-
+    
 }));
-
 

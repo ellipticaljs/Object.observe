@@ -1,52 +1,37 @@
 var gulp=require('gulp'),
-    gulputil=require('gulp-util'),
-    path=require('path'),
-    fs = require('fs-extra'),
     concat=require('gulp-concat'),
     uglify = require('gulp-uglify'),
-    merge = require('merge-stream'),
-    build=require('./build.json'),
-    release=require('./build/dist.json'),
-    src='./src',
-    dist='./dist';
-
-
+    BUILD_JSON=require('./build/dist.json'),
+    BUILD_NAME='Object.observe.js',
+    MIN_NAME='Object.observe.min.js',
+    REPO_NAME='Object observe',
+    DIST='./dist';
 
 
 gulp.task('default',function(){
-    console.log('Object.observe shim build..."tasks: gulp build|gulp minify"');
+    console.log(REPO_NAME + '..."tasks: gulp build|gulp minify"');
 });
 
 gulp.task('build',function(){
-
-    var build_=srcStream(build)
-        .pipe(concat('Object.observe.js'))
-        .pipe(gulp.dest(src));
-
-    var release_=srcStream(release)
-        .pipe(concat('Object.observe.js'))
-        .pipe(gulp.dest(dist));
-
-    return merge(build_, release_);
-
+    concatStream(BUILD_NAME)
+        .pipe(gulp.dest(DIST));
 });
 
 gulp.task('minify',function(){
-
-    var build_=srcStream(build)
-        .pipe(concat('Object.observe.js'))
-        .pipe(gulp.dest(src));
-
-    var minify_=srcStream(release)
-        .pipe(concat('Object.observe.min.js'))
+    concatStream(MIN_NAME)
         .pipe(uglify())
-        .pipe(gulp.dest(dist));
-
-    return merge(build_, minify_);
+        .pipe(gulp.dest(DIST));
 });
 
-function srcStream(src){
-    return gulp.src(src);
+function srcStream(){
+    return gulp.src(BUILD_JSON);
 }
+
+function concatStream(name){
+    return srcStream()
+        .pipe(concat(name))
+}
+
+
 
 
