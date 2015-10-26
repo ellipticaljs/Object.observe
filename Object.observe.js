@@ -15,7 +15,7 @@
     if(!Object.observe){
         (function(extend, global){
             "use strict";
-
+            global.__observePolyfill=true;
             var isCallable = (function(toString){
                 var s = toString.call(toString),
                     u = typeof u;
