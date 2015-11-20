@@ -12,7 +12,9 @@ Forked Modifications
     * Converted to a UMD Module
     * Added Object.observe "splice" support for arrays
     * Removed SetImmediate
+    * Removed "Use Strict" statement
     * Gulp Build Tasks
+    * Bower Package
     
     
 
