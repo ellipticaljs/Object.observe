@@ -2,7 +2,7 @@
 {
   "name": "Object.observe",
   "description": "Object.observe polyfill/shim",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": "Jeremy Darling",
   "contributors": [
     {
@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/tachyon1337/Object.observe.git"
+    "url": "https://github.com/ellipticaljs/Object.observe.git"
   },
   "devDependencies": {
     "chai": "~1.9.1",

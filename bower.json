@@ -1,7 +1,7 @@
 {
   "name": "Object-observe",
   "description": "Object.observe polyfill/shim",
-  "version":"0.0.5",
+  "version":"0.0.6",
   "main": "dist/Object.observe.js",
   "authors": [
     "Jeremy Darling,S. Francis"
@@ -11,7 +11,7 @@
     "Object",
     "observe"
   ],
-  "homepage": "https://github.com/tachyon1337/Object.observe",
+  "homepage": "https://github.com/ellipticaljs/Object.observe",
   "moduleType": [],
   "ignore": [
     "**/.*",

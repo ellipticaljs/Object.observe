@@ -1,9 +1,6 @@
 [![Build Status](https://travis-ci.org/jdarling/Object.observe.svg?branch=master)](https://travis-ci.org/jdarling/Object.observe)
 
-NOTICE
-==============
 
-This repo is now deprecated. The project has moved to https://github.com/ellipticaljs/Object.observe
 
 Forked Status
 =============
