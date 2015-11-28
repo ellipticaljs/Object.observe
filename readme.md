@@ -1,5 +1,10 @@
 [![Build Status](https://travis-ci.org/jdarling/Object.observe.svg?branch=master)](https://travis-ci.org/jdarling/Object.observe)
 
+NOTICE
+==============
+
+This repo is now deprecated. The project has moved to https://github.com/ellipticaljs/Object.observe
+
 Forked Status
 =============
 While there is no direct support for Array.observe, arrays passed to the Object.observe shim will now produce change records in the callback that match
